@@ -74,10 +74,6 @@
 
 
 
-
-
-
-
 (defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
 (defparameter *p-vector* (vector 8 8))
 (defparameter *r-vector* (vector 2 2))
@@ -105,3 +101,11 @@
 ;;   (setf *r-vector* (matrix-multiplication *r-matrix* *r-vector*))
 ;;   ;; transforma o vetor raio
 ;;   (sleep 1))
+
+
+
+;; TODO criar uma classe que constroi um vetor e que possui vários métodos
+;; já estabelicidos aqui neste arquivo.
+;; A idéia que eu tive foi, por exemplo, um vetor instanciado possui um
+;; metodo que calcula o seu produto interno em comparação a um outro vetor
+;; informado como parametro
