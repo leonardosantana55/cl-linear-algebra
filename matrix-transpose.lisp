@@ -77,56 +77,41 @@
                 (round (aref output i)))))))
 (matrix-vector-multiplication *matrix* *vector*)
 
-
-(defun (vector)
-  (dotimes (i (array-total-size v) v)
-    (setf (aref v i) (round (aref v i)))))
-
-(dot-product *vector* *vector*)
-(* (vector-magnitude *vector*)
-   (vector-magnitude *vector*)
-   (cos (vector-angle *vector* *vector*)))
-
 (defun matrix-rotation (angle)
-  (make-array '(2 2) :initial-contents `((,(cos angle) ,(asin angle))
+  (make-array '(2 2) :initial-contents `((,(cos angle) ,(* -1 (sin angle)))
                                          (,(sin angle) ,(cos angle)))))
-(matrix-rotation 1)
+(matrix-rotation pi)
 
 
 ;; TESTs
 
-(dotimes (i 4 nil)
-  (print (matrix-)))
+;; (dotimes (i 32 nil)
+;;   (print *vector*)
+;;   (setf *vector* (matrix-vector-multiplication (matrix-rotation 1) *vector* :round t)))
 
-(setf *vector* (matrix-vector-multiplication (matrix-rotation 1) *vector* :round t))
+(defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
+(defparameter *p-vector* (vector 8 8))
+(defparameter *r-vector* (vector 1 1))
+(defparameter *r-matrix* (matrix-rotation (/ pi 5)))
 
-;; (defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
-;; (defparameter *p-vector* (vector 8 8))
-;; (defparameter *r-vector* (vector 2 2))
-;; (defparameter *r-matrix* (make-array '(2 2) :initial-contents '((-1 0) (0 -1))))
-
-;; (defun print-matrix (matrix)
-;;   (dotimes (i (array-dimension matrix 0))
-;;     (dotimes (j (array-dimension matrix 1))
-;;       (format t "~a" (aref matrix i j)))
-;;     (format t "~%"))
-;;   (format t "~%~a~%" *p-vector*))
+(defun print-matrix (matrix)
+  (dotimes (i (array-dimension matrix 0))
+    (dotimes (j (array-dimension matrix 1))
+      (format t "~a" (aref matrix i j)))
+    (format t "~%"))
+  (format t "~%~a~%" *p-vector*))
 
 
-;; (dotimes (i 5 nil)
-;;   (print *r-vector*)
-;;   (setf *r-vector* (matrix-vector-multiplication *r-matrix* *r-vector*)))
-
-;; (dotimes (i 10 nil)
-;;   (print-matrix *p-matrix*)
-;;   (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "00.")
-;;   (print-matrix *p-matrix*)
-;;   (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "  .")
-;;   ;; soma o vector raio ao vector p
-;;   (setf *p-vector* (vector-sum *p-vector* *r-vector*))
-;;   (setf *r-vector* (matrix-vector-multiplication *r-matrix* *r-vector*))
-;;   ;; transforma o vetor raio
-;;   (sleep 1))
+(dotimes (i 100 nil)
+  (print-matrix *p-matrix*)
+  (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) ".  ")
+  (print-matrix *p-matrix*)
+  (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "  .")
+  ;; soma o vector raio ao vector p
+  (setf *p-vector* (vector-sum *p-vector* *r-vector*))
+  (setf *r-vector* (matrix-vector-multiplication *r-matrix* *r-vector* :round t))
+  ;; transforma o vetor raio
+  (sleep 0.05))
 
 
 
