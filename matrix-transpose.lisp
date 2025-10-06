@@ -1,47 +1,46 @@
 (defparameter *matrix* (make-array '(2 2) :initial-contents '((2 5) (1 3))))
 (defparameter *vector* (vector 1 2))
 
-(defun vector-sum (v1 v2)
+(defmethod sum ((v1 vector) (v2 vector))
   (dotimes (i (array-total-size v1) v1)
     (setf (aref v1 i)
           (+ (aref v1 i)
              (aref v2 i)))))
-(vector-sum *vector* *vector*)
+(sum *vector* *vector*)
 
-(defun vector-magnitude (vector)
+(defmethod magnitude ((vector vector))
   (let ((sum 0))
     (dotimes (i (array-total-size vector) (sqrt sum))
       (setf sum
             (+ sum
                (expt (aref vector i) 2))))))
 
-(defun vector-angle (adjacent hipotenuse &key (unit 'radians))
+(defmethod angle ((adjacent vector) (hipotenuse vector) &key (unit 'radians))
   "returns in radians the angle betwheen two vectors"
   (let ((result
-        (acos (/ (vector-magnitude adjacent)
-                 (vector-magnitude hipotenuse)))))
+        (acos (/ (magnitude adjacent)
+                 (magnitude hipotenuse)))))
     (case unit
       ((radians) result)
       ((degrees) (* result (/ 180 pi)))
       (otherwise "wrong unit of measure"))))
-(vector-angle (vector 2 0) (vector 2 2) :unit 'degrees)
+(angle (vector 2 0) (vector 2 2) :unit 'degrees)
 
-(defun vector-scalar-multiplication (vector scalar)
+(defmethod scalar-multiplication ((vector vector) scalar)
   (let ((output (make-array (array-total-size vector) :initial-element 0)))
     (dotimes (i (array-total-size vector))
       (setf (aref output i)
             (* scalar (aref vector i))))
     output))
-(vector-scalar-multiplication *vector* 2)
+(scalar-multiplication *vector* 2)
 
-(defun vector-unit (vector)
-  (vector-scalar-multiplication
+(defmethod unit ((vector vector))
+  (scalar-multiplication
    vector
-   (/ 1 (vector-magnitude vector))))
-(vector-magnitude (vector-unit (vector 2 3)))
+   (/ 1 (magnitude vector))))
+(magnitude (unit (vector 2 3)))
 
-
-(defun dot-product (v1 v2)
+(defmethod dot-product ((v1 vector) (v2 vector))
   (let ((lst nil))
     (dotimes (i (array-total-size v1) (apply #'+ lst))
       (setf lst (cons (* (aref v1 i)
@@ -108,7 +107,7 @@
   (print-matrix *p-matrix*)
   (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "  .")
   ;; soma o vector raio ao vector p
-  (setf *p-vector* (vector-sum *p-vector* *r-vector*))
+  (setf *p-vector* (sum *p-vector* *r-vector*))
   (setf *r-vector* (matrix-vector-multiplication *r-matrix* *r-vector* :round t))
   ;; transforma o vetor raio
   (sleep 0.05))
