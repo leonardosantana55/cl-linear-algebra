@@ -90,7 +90,7 @@
 
 (defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
 (defparameter *p-vector* (vector 8 8))
-(defparameter *r-vector* (vector 1 1))
+(defparameter *r-vector* (vector 2 2))
 (defparameter *r-matrix* (matrix-rotation (/ pi 5)))
 
 (defun print-matrix (matrix)
@@ -103,7 +103,7 @@
 
 (dotimes (i 100 nil)
   (print-matrix *p-matrix*)
-  (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) ".  ")
+  (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "   ")
   (print-matrix *p-matrix*)
   (setf (aref *p-matrix* (aref *p-vector* 0) (aref *p-vector* 1)) "  .")
   ;; soma o vector raio ao vector p
