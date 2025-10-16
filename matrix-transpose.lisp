@@ -1,4 +1,4 @@
-(defparameter *matrix* (make-array '(2 2) :initial-contents '((2 5) (1 3))))
+(defparameter *matrix* (make-array '(2 2) :adjustable t :initial-contents '((2 5) (1 3))))
 (defparameter *vector* (vector 1 2))
 
 (defmethod sum ((v1 vector) (v2 vector))
@@ -48,7 +48,7 @@
                       lst)))))
 (dot-product (vector 0 2) (vector 2 0))
 
-(defun matrix-transpose (input)
+(defmethod transpose ((input array))
   (let* ((m (array-dimension input 0))
          (n (array-dimension input 1))
          (output (make-array (list n m) :initial-element nil)))
@@ -57,7 +57,7 @@
         (setf (aref output i j)
               (aref input j i))))
     output))
-(defparameter *m-t* (matrix-transpose *matrix*))
+(setf *matrix* (transpose *matrix*))
 
 (defun matrix-vector-multiplication (matrix vector &key (round nil))
   (let ((m-t (matrix-transpose matrix))
@@ -76,22 +76,29 @@
                 (round (aref output i)))))))
 (matrix-vector-multiplication *matrix* *vector*)
 
-(defun matrix-rotation (angle)
+(defun rotation-matrix (angle)
   (make-array '(2 2) :initial-contents `((,(cos angle) ,(* -1 (sin angle)))
                                          (,(sin angle) ,(cos angle)))))
-(matrix-rotation pi)
+(rotation-matrix pi)
 
+
+(let ((test (make-array '(2 2) :initial-element nil :adjustable t)))
+  (setf (aref test 0 0) 0)
+  test)
 
 ;; TESTs
 
+(transpose (transpose #2a((16 6 0) (6 10 -3) (0 -3 22))))
+
 ;; (dotimes (i 32 nil)
 ;;   (print *vector*)
-;;   (setf *vector* (matrix-vector-multiplication (matrix-rotation 1) *vector* :round t)))
+;;   (setf *vector* (matrix-vector-multiplication (rotation-matrix 1) *vector* :round t)))
 
+;; cartesian plane matrix
 (defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
-(defparameter *p-vector* (vector 8 8))
-(defparameter *r-vector* (vector 2 2))
-(defparameter *r-matrix* (matrix-rotation (/ pi 5)))
+(defparameter *p-vector* (vector 8 8)) ;; origin
+(defparameter *r-vector* (vector 2 2)) ;; destination vector o radius of the circle
+(defparameter *r-matrix* (rotation-matrix (/ pi 5))) ;; rotation matrix
 
 (defun print-matrix (matrix)
   (dotimes (i (array-dimension matrix 0))
@@ -99,7 +106,6 @@
       (format t "~a" (aref matrix i j)))
     (format t "~%"))
   (format t "~%~a~%" *p-vector*))
-
 
 (dotimes (i 100 nil)
   (print-matrix *p-matrix*)
@@ -111,8 +117,6 @@
   (setf *r-vector* (matrix-vector-multiplication *r-matrix* *r-vector* :round t))
   ;; transforma o vetor raio
   (sleep 0.05))
-
-
 
 ;; TODO criar uma classe que constroi um vetor e que possui vários métodos
 ;; já estabelicidos aqui neste arquivo.
