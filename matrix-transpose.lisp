@@ -48,19 +48,36 @@
                       lst)))))
 (dot-product (vector 0 2) (vector 2 0))
 
-(defmethod transpose ((input array))
+
+;; MATRIX METHODS
+(defmethod m-transpose ((input array))
   (let* ((m (array-dimension input 0))
          (n (array-dimension input 1))
-         (output (make-array (list n m) :initial-element nil)))
+         (output (make-array (list n m) :initial-element 0)))
     (dotimes (i n)
       (dotimes (j m)
         (setf (aref output i j)
               (aref input j i))))
     output))
-(setf *matrix* (transpose *matrix*))
+(setf *matrix* (m-transpose *matrix*))
+
+(defmethod m-sum ((matrix array) &rest matrices)
+  (let* ((m (array-dimension matrix 0))
+         (n (array-dimension matrix 1))
+         (output (make-array (list m n) :initial-element 0)))
+    (push matrix matrices)
+    (dotimes (item (length matrices))
+      (dotimes (i n)
+        (dotimes (j m)
+          (setf (aref output i j)
+                (+ (aref (nth item matrices) i j)
+                   (aref output i j))))))
+    output))
+
+(m-sum *matrix* *matrix* *matrix*)
 
 (defun matrix-vector-multiplication (matrix vector &key (round nil))
-  (let ((m-t (matrix-transpose matrix))
+  (let ((m-t (m-transpose matrix))
         (m (array-dimension matrix 0))
         (n (array-dimension matrix 1))
         (output (make-array (array-total-size vector) :initial-element 0)))
@@ -76,23 +93,21 @@
                 (round (aref output i)))))))
 (matrix-vector-multiplication *matrix* *vector*)
 
+
+;; SPECIAL MATRICES FACILITIES
 (defun rotation-matrix (angle)
   (make-array '(2 2) :initial-contents `((,(cos angle) ,(* -1 (sin angle)))
                                          (,(sin angle) ,(cos angle)))))
 (rotation-matrix pi)
 
 
+;; TESTs
 (let ((test (make-array '(2 2) :initial-element nil :adjustable t)))
   (setf (aref test 0 0) 0)
   test)
 
-;; TESTs
+(m-transpose (m-transpose #2a((16 6 0) (6 10 -3) (0 -3 22))))
 
-(transpose (transpose #2a((16 6 0) (6 10 -3) (0 -3 22))))
-
-;; (dotimes (i 32 nil)
-;;   (print *vector*)
-;;   (setf *vector* (matrix-vector-multiplication (rotation-matrix 1) *vector* :round t)))
 
 ;; cartesian plane matrix
 (defparameter *p-matrix* (make-array '(16 16) :initial-element "  ."))
